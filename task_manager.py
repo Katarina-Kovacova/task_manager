@@ -8,6 +8,7 @@
 # =====importing libraries===========
 import os
 from datetime import datetime, date
+from pprint import pprint
 
 
 # function to register new user and add their username and password to the user.txt file
@@ -60,7 +61,8 @@ def add_task():
           - A username of the person whom the task is assigned to,
           - A title of a task,
           - A description of the task and
-          - the due date of the task.'''
+          - the due date of the task.
+          '''
 
     # ask user to input name of person assigned to task. If user doesn't exist, give option to input again.
     while True:
@@ -85,8 +87,10 @@ def add_task():
     curr_date = date.today()
     ''' Add the data to the file task.txt and
         Include 'No' to indicate if the task is complete.'''
+
+    task_num = str(len(task_list) + 1)
     new_task = {
-        # "task_num": len(task_list) + 1,
+        "task number": task_num,
         "username": task_username,
         "title": task_title,
         "description": task_description,
@@ -101,6 +105,7 @@ def add_task():
         for t in task_list:
             # add task num
             str_attrs = [
+                t['task number'],
                 t['username'],
                 t['title'],
                 t['description'],
@@ -132,11 +137,12 @@ def display_tasks(tasks):
 
     for t in tasks:
         # add task num
-        disp_str = f"Task: \t\t {t['title']}\n"
+        disp_str = f"Task Number: \t {t['task number']}\n"
+        disp_str += f"Task: \t\t\t {t['title']}\n"
         disp_str += f"Assigned to: \t {t['username']}\n"
         disp_str += f"Date Assigned: \t {t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-        disp_str += f"Due Date: \t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-        disp_str += f"Task Description: \n {t['description']}\n"
+        disp_str += f"Due Date: \t\t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+        disp_str += f"Task Description: \n\t {t['description']}\n"
         print(disp_str)
 
 
@@ -158,13 +164,16 @@ for t_str in task_data:
 
     # Split by semicolon and manually add each component
     task_components = t_str.split(";")
+    pprint(task_components)
+
     # task num
-    curr_t['username'] = task_components[0]
-    curr_t['title'] = task_components[1]
-    curr_t['description'] = task_components[2]
-    curr_t['due_date'] = datetime.strptime(task_components[3], DATETIME_STRING_FORMAT)
-    curr_t['assigned_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
-    curr_t['completed'] = True if task_components[5] == "Yes" else False
+    curr_t['task number'] = task_components[0]
+    curr_t['username'] = task_components[1]
+    curr_t['title'] = task_components[2]
+    curr_t['description'] = task_components[3]
+    curr_t['due_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
+    curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
+    curr_t['completed'] = True if task_components[6] == "Yes" else False
 
     task_list.append(curr_t)
 
