@@ -10,6 +10,8 @@ import os
 from datetime import datetime, date
 from pprint import pprint
 
+# TODO: add functionality to display_tasks function to allow user to select specific task or input -1 to return to the main menu
+
 
 # function to register new user and add their username and password to the user.txt file
 def register_new_user():
@@ -145,6 +147,10 @@ def display_tasks(tasks):
         disp_str += f"Task Description: \n\t {t['description']}\n"
         print(disp_str)
 
+    choice_of_task = input("If you would like to select task, enter task number or press -1 to return to Main menu. ")
+
+    if choice_of_task == "-1":
+        return
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
@@ -237,6 +243,7 @@ e - Exit
 
     elif menu == 'vm':
         display_tasks(get_tasks(task_list, user_name=curr_user))
+
 
     elif menu == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
