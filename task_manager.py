@@ -10,8 +10,6 @@ import os
 from datetime import datetime, date
 from pprint import pprint
 
-# TODO: add functionality to display_tasks function to allow user to select specific task or input -1 to return to the main menu
-
 
 # function to register new user and add their username and password to the user.txt file
 def register_new_user():
@@ -161,16 +159,16 @@ if not os.path.exists("tasks.txt"):
 
 with open("tasks.txt", 'r') as task_file:
     task_data = task_file.read().split("\n")
-    task_data = [t for t in task_data if t != ""]
+    task_data = [t for t in task_data if t != ""] # list of strings ['1;admin;Add functionality to task manager' '2;username;task' etc.]
 
 
+task_dict = {}
 task_list = []
 for t_str in task_data:
     curr_t = {}
 
     # Split by semicolon and manually add each component
     task_components = t_str.split(";")
-    pprint(task_components)
 
     # task num
     curr_t['task number'] = task_components[0]
@@ -181,8 +179,10 @@ for t_str in task_data:
     curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
     curr_t['completed'] = True if task_components[6] == "Yes" else False
 
-    task_list.append(curr_t)
-
+    task_dict[curr_t['task number']] = curr_t  # dictionary of dictionaries with "key"= task number & "value" = whole task
+    task_list.append(curr_t)  # list of dictionaries
+# print(task_dict)
+# print(task_list)
 
 #====Login Section====
 '''This code reads usernames and password from the user.txt file to 
