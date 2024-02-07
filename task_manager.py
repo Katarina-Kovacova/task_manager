@@ -145,10 +145,6 @@ def display_tasks(tasks):
         disp_str += f"Task Description: \n\t {t['description']}\n"
         print(disp_str)
 
-    choice_of_task = input("If you would like to select task, enter task number or press -1 to return to Main menu. ")
-
-    if choice_of_task == "-1":
-        return
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
@@ -180,9 +176,38 @@ for t_str in task_data:
     curr_t['completed'] = True if task_components[6] == "Yes" else False
 
     task_dict[curr_t['task number']] = curr_t  # dictionary of dictionaries with "key"= task number & "value" = whole task
-    task_list.append(curr_t)  # list of dictionaries
+    task_list.append(curr_t)  # list of dictionaries [{
 # print(task_dict)
 # print(task_list)
+
+
+def choose_task_or_return_to_menu():
+    # User to enter whether he wants to edit the task, mark the task as complete or return to main menu
+    while True:
+        try:
+            user_choice_of_task = int(input("To select a task, enter task number. "
+                                "To return to main menu, enter -1. "))
+            break
+        except ValueError:
+            print("Please only enter positive integers or -1 to return to main menu. ")
+
+    # while user is choosing a task number, check whether the task exists and if not, ask to re-enter the task no again
+    if user_choice_of_task == -1:
+        return
+    else:
+        while user_choice_of_task != -1:
+            try:
+                if 0 < user_choice_of_task <= len(task_list):
+                    print(f"You have chosen task no. {user_choice_of_task}.")
+                    break
+                elif len(task_list) < user_choice_of_task or user_choice_of_task <= 0:
+                    print("Only choose from existing task numbers.")
+                    user_choice_of_task = int(input("Please select a task number again or -1 to return to main menu. "))
+                    continue
+            except ValueError:
+                print(f"Pleas only choose integers and only choose from existing tasks.")
+    return user_choice_of_task
+
 
 #====Login Section====
 '''This code reads usernames and password from the user.txt file to 
@@ -243,6 +268,8 @@ e - Exit
 
     elif menu == 'vm':
         display_tasks(get_tasks(task_list, user_name=curr_user))
+        choose_task_or_return_to_menu()
+
 
 
     elif menu == 'ds' and curr_user == 'admin':
