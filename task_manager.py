@@ -129,6 +129,27 @@ def get_tasks(all_tasks, user_name=None):
         return tasks
 
 
+def convert_user_assigned_tasks_to_dict(user_assigned_tasks_list):
+    user_assigned_tasks_dict = {}
+    for item in user_assigned_tasks_list:
+        task_number = item['task number']
+        user_assigned_tasks_dict[task_number] = item
+    return user_assigned_tasks_dict
+
+
+def chosen_task(chosen_task_input, user_tasks_dictionary):
+    while True:
+        if chosen_task_input in user_tasks_dictionary:
+            print(f"You have chosen task no {chosen_task_input}. ")
+            break
+        else:
+            print("Invalid input, or you have not been assigned this task number. "
+                  "Choose from given task number options.")
+            chosen_task_input = input("Choose from given task number options.")
+            continue
+    return chosen_task_input # this is the task number that exists and has been assigned to him.
+
+
 def display_tasks(tasks):
     '''Reads the task from task.txt file and prints to the console in the
        format of Output 2 presented in the task pdf (i.e. includes spacing
@@ -179,34 +200,6 @@ for t_str in task_data:
     task_list.append(curr_t)  # list of dictionaries [{
 # print(task_dict)
 # print(task_list)
-
-
-def choose_task_or_return_to_menu():
-    # User to enter whether he wants to edit the task, mark the task as complete or return to main menu
-    while True:
-        try:
-            user_choice_of_task = int(input("To select a task, enter task number. "
-                                "To return to main menu, enter -1. "))
-            break
-        except ValueError:
-            print("Please only enter positive integers or -1 to return to main menu. ")
-
-    # while user is choosing a task number, check whether the task exists and if not, ask to re-enter the task no again
-    if user_choice_of_task == -1:
-        return
-    else:
-        while user_choice_of_task != -1:
-            try:
-                if 0 < user_choice_of_task <= len(task_list):
-                    print(f"You have chosen task no. {user_choice_of_task}.")
-                    break
-                elif len(task_list) < user_choice_of_task or user_choice_of_task <= 0:
-                    print("Only choose from existing task numbers.")
-                    user_choice_of_task = int(input("Please select a task number again or -1 to return to main menu. "))
-                    continue
-            except ValueError:
-                print(f"Pleas only choose integers and only choose from existing tasks.")
-    return user_choice_of_task
 
 
 #====Login Section====
@@ -268,8 +261,18 @@ e - Exit
 
     elif menu == 'vm':
         display_tasks(get_tasks(task_list, user_name=curr_user))
-        choose_task_or_return_to_menu()
 
+        # convert list of assigned tasks to dictionary of dictionaries
+        user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
+
+        user_choice_of_task = input("To select a task, enter task number. "
+                                    "To return to main menu, enter -1. ")
+        if user_choice_of_task == "-1":
+            pass
+
+        if user_choice_of_task != "-1":
+            # user chooses a task
+            chosen_task(user_choice_of_task, user_assigned_tasks_dict)
 
 
     elif menu == 'ds' and curr_user == 'admin':
