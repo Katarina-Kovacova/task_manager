@@ -150,6 +150,25 @@ def chosen_task(chosen_task_input, user_tasks_dictionary):
     return chosen_task_input # this is the task number that exists and has been assigned to him.
 
 
+def edit_chosen_task():
+    pass
+
+
+def mark_task_as_complete(user_assigned_tasks_list, task_chosen_by_user):
+    # find the chosen task number in user assigned task list and if task not completed, change to Yes (completed)
+    for task in user_assigned_tasks_list:
+        # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
+        if task["task number"] == task_chosen_by_user and task["completed"] == False:
+            task["completed"] = True
+        else:
+            # if the task is marked as completed, display the relevant message.
+            print("The task has already been marked as completed.")
+
+    # mark the relevant task in the tasks.txt file
+    # with open("tasks.txt", "w") as task_f:
+    return user_assigned_tasks_list
+
+
 def display_tasks(tasks):
     '''Reads the task from task.txt file and prints to the console in the
        format of Output 2 presented in the task pdf (i.e. includes spacing
@@ -176,7 +195,7 @@ if not os.path.exists("tasks.txt"):
 
 with open("tasks.txt", 'r') as task_file:
     task_data = task_file.read().split("\n")
-    task_data = [t for t in task_data if t != ""] # list of strings ['1;admin;Add functionality to task manager' '2;username;task' etc.]
+    task_data = [t for t in task_data if t != ""] # list of strings ['1;admin;Add functto task manager' '2;username;task' etc.]
 
 
 task_dict = {}
@@ -196,13 +215,13 @@ for t_str in task_data:
     curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
     curr_t['completed'] = True if task_components[6] == "Yes" else False
 
-    task_dict[curr_t['task number']] = curr_t  # dictionary of dictionaries with "key"= task number & "value" = whole task
+    task_dict[curr_t['task number']] = curr_t  # dict of dictionaries with "key"= task number & "value" = whole task
     task_list.append(curr_t)  # list of dictionaries [{
 # print(task_dict)
 # print(task_list)
 
 
-#====Login Section====
+# #====Login Section====
 '''This code reads usernames and password from the user.txt file to 
     allow a user to login.
 '''
@@ -272,8 +291,16 @@ e - Exit
 
         if user_choice_of_task != "-1":
             # user chooses a task
-            chosen_task(user_choice_of_task, user_assigned_tasks_dict)
+            chosen_task = chosen_task(user_choice_of_task, user_assigned_tasks_dict)
 
+            task_manipulation_choice = input("Enter edit to edit the task or MC to mark as complete.").lower()
+
+            if task_manipulation_choice == "edit":
+                pass
+            # edit_task(choose_task_or_return_to_menu())
+            # pass
+            elif task_manipulation_choice == "mc":
+                mark_task_as_complete(get_tasks(task_list, user_name=curr_user), chosen_task)
 
     elif menu == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
