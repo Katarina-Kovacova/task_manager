@@ -160,13 +160,16 @@ def mark_task_as_complete(user_assigned_tasks_list, task_chosen_by_user):
         # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
         if task["task number"] == task_chosen_by_user and task["completed"] == False:
             task["completed"] = True
-        else:
+            print(f"The task no {task_chosen_by_user} has been marked as completed.")
+            print(user_assigned_tasks_list)
+            return
+        elif task["task number"] == task_chosen_by_user and task["completed"] == True:
             # if the task is marked as completed, display the relevant message.
             print("The task has already been marked as completed.")
 
     # mark the relevant task in the tasks.txt file
     # with open("tasks.txt", "w") as task_f:
-    return user_assigned_tasks_list
+    print(user_assigned_tasks_list)
 
 
 def display_tasks(tasks):
@@ -218,7 +221,7 @@ for t_str in task_data:
     task_dict[curr_t['task number']] = curr_t  # dict of dictionaries with "key"= task number & "value" = whole task
     task_list.append(curr_t)  # list of dictionaries [{
 # print(task_dict)
-# print(task_list)
+print(task_list)
 
 
 # #====Login Section====
@@ -292,6 +295,7 @@ e - Exit
         if user_choice_of_task != "-1":
             # user chooses a task
             chosen_task = chosen_task(user_choice_of_task, user_assigned_tasks_dict)
+            print(type(chosen_task))
 
             task_manipulation_choice = input("Enter edit to edit the task or MC to mark as complete.").lower()
 
