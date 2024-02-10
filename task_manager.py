@@ -100,9 +100,14 @@ def add_task():
     }
 
     task_list.append(new_task)
+    write_tasks_to_file(task_list)
+    print("Task successfully added.")
+
+
+def write_tasks_to_file(tasks):
     with open("tasks.txt", "w") as task_file:
         task_list_to_write = []
-        for t in task_list:
+        for t in tasks:
             # add task num
             str_attrs = [
                 t['task number'],
@@ -115,7 +120,6 @@ def add_task():
             ]
             task_list_to_write.append(";".join(str_attrs))
         task_file.write("\n".join(task_list_to_write))
-    print("Task successfully added.")
 
 
 def get_tasks(all_tasks, user_name=None):
@@ -155,21 +159,22 @@ def edit_chosen_task():
 
 
 def mark_task_as_complete(all_tasks, task_chosen_by_user):
+
     # find the chosen task number in all task list and if task not completed, change to Yes (completed)
     for task in all_tasks:
         # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
         if task["task number"] == task_chosen_by_user and task["completed"] == False:
             task["completed"] = True
             print(f"The task no {task_chosen_by_user} has been marked as completed.")
-            print(all_tasks)
-            return
+            # print(all_tasks)
+
         elif task["task number"] == task_chosen_by_user and task["completed"] == True:
             # if the task is marked as completed, display the relevant message.
             print("The task has already been marked as completed.")
 
     # mark the relevant task in the tasks.txt file
-    # with open("tasks.txt", "w") as task_f:
-        # write function to update tasks.txt file
+    write_tasks_to_file(all_tasks)
+
     print(all_tasks)
 
 
@@ -304,7 +309,6 @@ e - Exit
                         break
             except ValueError:
                 print("You have entered incorrect choice. Only enter positive integers. ")
-
 
     elif menu == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
