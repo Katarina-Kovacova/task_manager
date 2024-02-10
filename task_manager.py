@@ -154,14 +154,14 @@ def edit_chosen_task():
     pass
 
 
-def mark_task_as_complete(user_assigned_tasks_list, task_chosen_by_user):
-    # find the chosen task number in user assigned task list and if task not completed, change to Yes (completed)
-    for task in user_assigned_tasks_list:
+def mark_task_as_complete(all_tasks, task_chosen_by_user):
+    # find the chosen task number in all task list and if task not completed, change to Yes (completed)
+    for task in all_tasks:
         # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
         if task["task number"] == task_chosen_by_user and task["completed"] == False:
             task["completed"] = True
             print(f"The task no {task_chosen_by_user} has been marked as completed.")
-            print(user_assigned_tasks_list)
+            print(all_tasks)
             return
         elif task["task number"] == task_chosen_by_user and task["completed"] == True:
             # if the task is marked as completed, display the relevant message.
@@ -169,7 +169,8 @@ def mark_task_as_complete(user_assigned_tasks_list, task_chosen_by_user):
 
     # mark the relevant task in the tasks.txt file
     # with open("tasks.txt", "w") as task_f:
-    print(user_assigned_tasks_list)
+        # write function to update tasks.txt file
+    print(all_tasks)
 
 
 def display_tasks(tasks):
@@ -283,28 +284,23 @@ e - Exit
 
     elif menu == 'vm':
         display_tasks(get_tasks(task_list, user_name=curr_user))
-
-        # convert list of assigned tasks to dictionary of dictionaries
         user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
 
-        user_choice_of_task = input("To select a task, enter task number. "
-                                    "To return to main menu, enter -1. ")
-        if user_choice_of_task == "-1":
+        choose_task = input("Enter task number assigned to you or -1 to return to main menu. ")
+
+        if choose_task == "-1":
             pass
-
-        if user_choice_of_task != "-1":
-            # user chooses a task
-            chosen_task = chosen_task(user_choice_of_task, user_assigned_tasks_dict)
-            print(type(chosen_task))
-
-            task_manipulation_choice = input("Enter edit to edit the task or MC to mark as complete.").lower()
-
-            if task_manipulation_choice == "edit":
+        elif choose_task in user_assigned_tasks_dict:
+            print(f"You have chosen task number {choose_task}")
+            amending_task = input("Enter edit to edit the task or MC as mark as completed.  ").lower()
+            if amending_task == "edit":
                 pass
-            # edit_task(choose_task_or_return_to_menu())
-            # pass
-            elif task_manipulation_choice == "mc":
-                mark_task_as_complete(get_tasks(task_list, user_name=curr_user), chosen_task)
+                #write function
+            elif amending_task == "mc":
+                mark_task_as_complete(task_list,choose_task)
+
+        else:
+            print("You have entered incorrect choice. ")
 
     elif menu == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
