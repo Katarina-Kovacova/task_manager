@@ -137,17 +137,17 @@ def convert_user_assigned_tasks_to_dict(user_assigned_tasks_list):
     return user_assigned_tasks_dict
 
 
-def chosen_task(chosen_task_input, user_tasks_dictionary):
-    while True:
-        if chosen_task_input in user_tasks_dictionary:
-            print(f"You have chosen task no {chosen_task_input}. ")
-            break
-        else:
-            print("Invalid input, or you have not been assigned this task number. "
-                  "Choose from given task number options.")
-            chosen_task_input = input("Choose from given task number options.")
-            continue
-    return chosen_task_input # this is the task number that exists and has been assigned to him.
+# def chosen_task(chosen_task_input, user_tasks_dictionary):
+#     while True:
+#         if chosen_task_input in user_tasks_dictionary:
+#             print(f"You have chosen task no {chosen_task_input}. ")
+#             break
+#         else:
+#             print("Invalid input, or you have not been assigned this task number. "
+#                   "Choose from given task number options.")
+#             chosen_task_input = input("Choose from given task number options.")
+#             continue
+#     return chosen_task_input # this is the task number that exists and has been assigned to him.
 
 
 def edit_chosen_task():
@@ -222,7 +222,7 @@ for t_str in task_data:
     task_dict[curr_t['task number']] = curr_t  # dict of dictionaries with "key"= task number & "value" = whole task
     task_list.append(curr_t)  # list of dictionaries [{
 # print(task_dict)
-print(task_list)
+# print(task_list)
 
 
 # #====Login Section====
@@ -286,21 +286,25 @@ e - Exit
         display_tasks(get_tasks(task_list, user_name=curr_user))
         user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
 
-        choose_task = input("Enter task number assigned to you or -1 to return to main menu. ")
+        while True:
+            try:
+                choose_task = input("Enter task number assigned to you or -1 to return to main menu. ")
 
-        if choose_task == "-1":
-            pass
-        elif choose_task in user_assigned_tasks_dict:
-            print(f"You have chosen task number {choose_task}")
-            amending_task = input("Enter edit to edit the task or MC as mark as completed.  ").lower()
-            if amending_task == "edit":
-                pass
-                #write function
-            elif amending_task == "mc":
-                mark_task_as_complete(task_list,choose_task)
+                if choose_task == "-1":
+                    break
+                    #pass
+                elif choose_task in user_assigned_tasks_dict:
+                    print(f"You have chosen task number {choose_task}")
+                    amending_task = input("Enter edit to edit the task or MC as mark as completed.  ").lower()
+                    if amending_task == "edit":
+                        pass
+                        #write function
+                    elif amending_task == "mc":
+                        mark_task_as_complete(task_list, choose_task)
+                        break
+            except ValueError:
+                print("You have entered incorrect choice. Only enter positive integers. ")
 
-        else:
-            print("You have entered incorrect choice. ")
 
     elif menu == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
