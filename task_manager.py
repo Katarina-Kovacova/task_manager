@@ -265,6 +265,18 @@ while not logged_in:
         print("Login Successful!")
         logged_in = True
 
+
+def edit_task_owner(task):
+    while True:
+        task_username = input("Who do you want to assign this task to: ").lower()
+        if task_username not in username_password.keys():
+            print("User does not exist. Please enter a valid username")
+        else:
+            break
+    task['username'] = task_username
+    return task
+
+
 while True:
     # presenting the menu to the user and
     # making sure that the user input is converted to lower case.
@@ -300,9 +312,19 @@ e - Exit
                     #pass
                 elif choose_task in user_assigned_tasks_dict:
                     print(f"You have chosen task number {choose_task}")
+                    current_task = user_assigned_tasks_dict[choose_task]
                     amending_task = input("Enter edit to edit the task or MC as mark as completed.  ").lower()
                     if amending_task == "edit":
-                        pass
+                        # first check if task marked as True
+                        if current_task["completed"] is True:
+                            print("The task has been marked as completed and cannot be changed.")
+                        else:
+                            choose_edit_option = input("Press 1 to edit task owner or press 2 to edit due date. ")
+                            if choose_edit_option == "1":
+                                current_task = edit_task_owner(current_task)
+                            else:
+                                #edit_due_date()
+                                pass
                         #write function
                     elif amending_task == "mc":
                         mark_task_as_complete(task_list, choose_task)
