@@ -277,29 +277,46 @@ def edit_task_owner(task):
     return task
 
 
+def edit_due_date(task):
+    new_due_date = input("What date would you like to change this to? ")
+    task['due_date'] = new_due_date
+    return task
+
 while True:
     # presenting the menu to the user and
     # making sure that the user input is converted to lower case.
     print()
-    menu = input('''Select one of the following Options below:
+
+    menu_top = '''
 r - Registering a user
 a - Adding a task
 va - View all tasks
 vm - View my task
+'''
+
+    menu_bottom = '''
 ds - Display statistics
 e - Exit
-: ''').lower()
+: '''
+    menu_admin = "gr - generate reports"
 
-    if menu == 'r':
+    if curr_user == "admin":
+        print(menu_top + menu_admin + menu_bottom)
+    else:
+        print(menu_top + menu_bottom)
+
+    menu_selection = input("Select one of the following Options above: ").lower()
+
+    if menu_selection == 'r':
         register_new_user()
 
-    elif menu == 'a':
+    elif menu_selection == 'a':
         add_task()
 
-    elif menu == 'va':
+    elif menu_selection == 'va':
         display_tasks(get_tasks(task_list, None))
 
-    elif menu == 'vm':
+    elif menu_selection == 'vm':
         display_tasks(get_tasks(task_list, user_name=curr_user))
         user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
 
@@ -313,7 +330,7 @@ e - Exit
                 elif choose_task in user_assigned_tasks_dict:
                     print(f"You have chosen task number {choose_task}")
                     current_task = user_assigned_tasks_dict[choose_task]
-                    amending_task = input("Enter edit to edit the task or MC as mark as completed.  ").lower()
+                    amending_task = input("Enter 'edit' to edit the task or MC as mark as completed.  ").lower()
                     if amending_task == "edit":
                         # first check if task marked as True
                         if current_task["completed"] is True:
@@ -322,17 +339,19 @@ e - Exit
                             choose_edit_option = input("Press 1 to edit task owner or press 2 to edit due date. ")
                             if choose_edit_option == "1":
                                 current_task = edit_task_owner(current_task)
+                                print(task_list)
+                                write_tasks_to_file(task_list)
                             else:
-                                #edit_due_date()
-                                pass
-                        #write function
+                                current_task = edit_due_date(current_task)
+                                write_tasks_to_file(task_list)
+
                     elif amending_task == "mc":
                         mark_task_as_complete(task_list, choose_task)
                         break
             except ValueError:
                 print("You have entered incorrect choice. Only enter positive integers. ")
 
-    elif menu == 'ds' and curr_user == 'admin':
+    elif menu_selection == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
             and tasks.'''
         num_users = len(username_password.keys())
@@ -343,7 +362,11 @@ e - Exit
         print(f"Number of tasks: \t\t {num_tasks}")
         print("-----------------------------------")
 
-    elif menu == 'e':
+    elif menu_selection == 'gr':
+        pass
+        # write function to generate reports
+
+    elif menu_selection == 'e':
         print('Goodbye!!!')
         exit()
 
