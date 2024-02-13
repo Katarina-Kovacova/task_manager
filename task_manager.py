@@ -226,8 +226,8 @@ for t_str in task_data:
 
     task_dict[curr_t['task number']] = curr_t  # dict of dictionaries with "key"= task number & "value" = whole task
     task_list.append(curr_t)  # list of dictionaries [{
-# print(task_dict)
-# print(task_list)
+#pprint(task_dict)
+#pprint(task_list)
 
 
 # #====Login Section====
@@ -281,6 +281,103 @@ def edit_due_date(task):
     new_due_date = input("What date would you like to change this to? ")
     task['due_date'] = new_due_date
     return task
+
+
+def generate_task_overview(all_tasks):
+    number_of_all_tasks = len(all_tasks)
+    total_incomplete = 0
+    total_overdue_incomplete_tasks = 0
+    for task in all_tasks:
+        if task["completed"] is False:
+            total_incomplete += 1
+            due_date = task["due_date"]
+            todays_date = datetime.today()
+            if due_date < todays_date:
+                total_overdue_incomplete_tasks += 1
+    total_completed_tasks = number_of_all_tasks - total_incomplete
+    percentage_of_incomplete_tasks = (total_incomplete / number_of_all_tasks) * 100
+    percentage_of_overdue_tasks = (total_overdue_incomplete_tasks * 100)/ number_of_all_tasks
+
+    task_overview_string = f"Task Overview\n{number_of_all_tasks=}\n{total_completed_tasks=}\n{total_incomplete=}" \
+                           f"\n{total_overdue_incomplete_tasks=}\n{percentage_of_incomplete_tasks=}\n{percentage_of_overdue_tasks=}"
+    print(task_overview_string)
+
+    with open("task_overview.txt", "w") as overview_file:
+        overview_file.write(task_overview_string)
+
+
+    # total_completed_tasks = the total number of completed tasks all_tasks["completed] = True
+    # total_incomplete = number_of_tasks - total_completed_tasks the total number of completed tasks all_tasks["completed] = True
+    # total_overdue_incomplete_tasks = if today is greater than due date and task["completed"] = False
+
+
+def generate_user_overview(all_tasks_list, all_users):
+    total_number_of_users = len(all_users)
+    total_number_of_tasks = len(all_tasks_list)
+    report_list_of_strings = [f"User Overview\n{total_number_of_users=}\n{total_number_of_tasks=}\n\n"]
+
+    for participant in all_users:
+        num_users_tasks = 0
+        total_incomplete = 0
+        total_overdue_incomplete_tasks = 0
+        for task in all_tasks_list:
+            if task["username"] == participant:
+                num_users_tasks += 1
+                if task["completed"] is False:
+                    total_incomplete += 1
+                    due_date = task["due_date"]
+                    date_today = datetime.today()
+                    if due_date < date_today:
+                        total_overdue_incomplete_tasks += 1
+    # total_user_tasks_completed = num_users_tasks - total_incomplete
+        percentage_of_incomplete_tasks = (total_incomplete / total_number_of_tasks) * 100
+        percentage_of_completed_user_assigned_tasks = 100 - percentage_of_incomplete_tasks
+        percentage_of_overdue_tasks = (total_overdue_incomplete_tasks * 100) / total_number_of_tasks
+        percentage_of_user_assigned_tasks = (num_users_tasks * 100) / total_number_of_tasks
+
+        user_overview_string = f"For user {participant}:\n{num_users_tasks=}\n{percentage_of_user_assigned_tasks=}\n" \
+                               f"{percentage_of_completed_user_assigned_tasks=}\n" \
+                               f"{percentage_of_incomplete_tasks=}\n{percentage_of_overdue_tasks=}\n\n"
+
+        report_list_of_strings.append(user_overview_string)
+    report_string = "".join(report_list_of_strings)
+
+    with open("user_overview.txt", "w") as user_overview_file:
+        user_overview_file.write(report_string)
+
+def get_all_users(user_password_dict):
+    usernames = []
+    for registered_user in user_password_dict.keys():
+        print(registered_user)
+        usernames.append(registered_user)
+    return usernames
+
+
+def generate_reports(all_tasks):
+    generate_task_overview(all_tasks)
+    generate_user_overview(all_tasks, get_all_users(username_password))
+    # # generate admin reports
+    # task_overview.txt
+    # user_overview.txt
+
+
+def display_stats():
+
+    with open("user.txt", 'r') as user_file:
+        user_data = user_file.read().split("\n")
+
+    num_users = len(user_data)
+
+    with open("tasks.txt", 'r') as task_file:
+        task_data = task_file.read().split("\n")
+
+    num_tasks = len(task_data)
+
+    print("-----------------------------------")
+    print(f"Number of users: \t\t {num_users}")
+    print(f"Number of tasks: \t\t {num_tasks}")
+    print("-----------------------------------")
+
 
 while True:
     # presenting the menu to the user and
@@ -354,16 +451,10 @@ e - Exit
     elif menu_selection == 'ds' and curr_user == 'admin':
         '''If the user is an admin they can display statistics about number of users
             and tasks.'''
-        num_users = len(username_password.keys())
-        num_tasks = len(task_list)
-
-        print("-----------------------------------")
-        print(f"Number of users: \t\t {num_users}")
-        print(f"Number of tasks: \t\t {num_tasks}")
-        print("-----------------------------------")
+        display_stats()
 
     elif menu_selection == 'gr':
-        pass
+        generate_reports(task_list)
         # write function to generate reports
 
     elif menu_selection == 'e':
