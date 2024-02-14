@@ -11,7 +11,13 @@ from datetime import datetime, date
 
 
 def add_task_number_to_tasks_file():
-    pass
+    with open("tasks.txt", "r") as f:
+        starting_tasks_file = f.read().split(";")
+        starting_tasks_file.insert(0,"1")
+
+    return starting_tasks_file
+
+
 
 
 
@@ -185,6 +191,9 @@ def display_tasks(tasks):
 
 
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
+
+
+print(add_task_number_to_tasks_file())
 
 # Create tasks.txt if it doesn't exist
 if not os.path.exists("tasks.txt"):
