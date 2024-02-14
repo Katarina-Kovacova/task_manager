@@ -10,14 +10,20 @@ import os
 from datetime import datetime, date
 
 
+# def add_task_number_to_tasks_file():
+#     with open("tasks.txt", "r") as f:
+#         starting_tasks_file = f.read().split(";")
+#         starting_tasks_file.insert(0,"1")
+
+#     return starting_tasks_file
+
 def add_task_number_to_tasks_file():
     with open("tasks.txt", "r") as f:
         starting_tasks_file = f.read().split(";")
-        starting_tasks_file.insert(0,"1")
-
-    return starting_tasks_file
-
-
+        starting_tasks_file.insert(0, "1")  
+        updated_task = "".join(starting_tasks_file)
+       
+        f.write(updated_task)
 
 
 
