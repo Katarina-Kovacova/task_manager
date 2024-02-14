@@ -10,21 +10,18 @@ import os
 from datetime import datetime, date
 
 
-# def add_task_number_to_tasks_file():
-#     with open("tasks.txt", "r") as f:
-#         starting_tasks_file = f.read().split(";")
-#         starting_tasks_file.insert(0,"1")
-
-#     return starting_tasks_file
-
-def add_task_number_to_tasks_file():
+def add_number_1_to_first_task():
     with open("tasks.txt", "r") as f:
-        starting_tasks_file = f.read().split(";")
-        starting_tasks_file.insert(0, "1")  
-        updated_task = "".join(starting_tasks_file)
-       
-        f.write(updated_task)
+        first_task = f.read().split(";")
+        if first_task[0][0] != "1":
+            first_task.insert(0, "1")
+            first_task_string = ";".join(first_task)
+    return first_task_string
 
+
+def add_first_numbered_task_to_task_file(first_task_string):
+    with open("tasks.txt", "w") as f:
+        f.write(first_task_string)
 
 
 # function to register new user and add their username and password to the user.txt file
@@ -79,7 +76,6 @@ def add_task():
           - A title of a task,
           - A description of the task and
           - the due date of the task."""
-
 
     # ask user to input name of person assigned to task. If user doesn't exist, give option to input again.
     while True:
@@ -161,7 +157,6 @@ def convert_user_assigned_tasks_to_dict(user_assigned_tasks_list):
 
 
 def mark_task_as_complete(all_tasks, task_chosen_by_user):
-
     # find the chosen task number in all task list and if task not completed, change to Yes (completed)
     for task in all_tasks:
         # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
@@ -199,12 +194,11 @@ def display_tasks(tasks):
 DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
 
-print(add_task_number_to_tasks_file())
-
 # Create tasks.txt if it doesn't exist
 if not os.path.exists("tasks.txt"):
     with open("tasks.txt", "w") as default_file:
         pass
+
 
 with open("tasks.txt", 'r') as task_file:
     task_data = task_file.read().split("\n")
@@ -232,7 +226,6 @@ for t_str in task_data:
 
     task_dict[curr_t['task number']] = curr_t
     task_list.append(curr_t)
-
 
 # #====Login Section====
 '''This code reads usernames and password from the user.txt file to 
@@ -303,7 +296,7 @@ def generate_task_overview(all_tasks):
                 total_overdue_incomplete_tasks += 1
     total_completed_tasks = number_of_all_tasks - total_incomplete
     percentage_of_incomplete_tasks = (total_incomplete / number_of_all_tasks) * 100
-    percentage_of_overdue_tasks = (total_overdue_incomplete_tasks * 100)/ number_of_all_tasks
+    percentage_of_overdue_tasks = (total_overdue_incomplete_tasks * 100) / number_of_all_tasks
 
     task_overview_string = f"Task Overview\nNumber of all tasks = {number_of_all_tasks}\n" \
                            f"Total number of completed tasks = {total_completed_tasks}\n" \
@@ -311,11 +304,12 @@ def generate_task_overview(all_tasks):
                            f"Total number of overdue & uncompleted tasks = {total_overdue_incomplete_tasks}\n" \
                            f"Percentage of uncompleted tasks = {percentage_of_incomplete_tasks}\n" \
                            f"Percentage of overdue tasks =  {percentage_of_overdue_tasks}"
-    #print(task_overview_string)
+    # print(task_overview_string)
 
     # write task overview into the text file
     with open("task_overview.txt", "w") as overview_file:
         overview_file.write(task_overview_string)
+
 
 def generate_user_overview(all_tasks_list, all_users):
     # function will create user overview file that displays statistics for all users
@@ -336,7 +330,7 @@ def generate_user_overview(all_tasks_list, all_users):
                     date_today = datetime.today()
                     if due_date < date_today:
                         total_overdue_incomplete_tasks += 1
-    # total_user_tasks_completed = num_users_tasks - total_incomplete
+        # total_user_tasks_completed = num_users_tasks - total_incomplete
         percentage_of_incomplete_tasks = (total_incomplete / total_number_of_tasks) * 100
         percentage_of_completed_user_assigned_tasks = 100 - percentage_of_incomplete_tasks
         percentage_of_overdue_tasks = (total_overdue_incomplete_tasks * 100) / total_number_of_tasks
@@ -348,7 +342,7 @@ def generate_user_overview(all_tasks_list, all_users):
                                f"Percentage of completed tasks = {percentage_of_completed_user_assigned_tasks}\n" \
                                f"Percentage of uncompleted tasks = {percentage_of_incomplete_tasks}\n" \
                                f"Percentage of overdue tasks = {percentage_of_overdue_tasks=}\n\n"
-        #print(user_overview_string)
+        # print(user_overview_string)
 
         report_list_of_strings.append(user_overview_string)
     report_string = "".join(report_list_of_strings)
@@ -435,7 +429,7 @@ e - Exit
 
                 if choose_task == "-1":
                     break
-                    #pass
+                    # pass
                 elif choose_task in user_assigned_tasks_dict:
                     print(f"You have chosen task number {choose_task}")
                     current_task = user_assigned_tasks_dict[choose_task]
