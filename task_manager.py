@@ -26,7 +26,7 @@ def add_number_1_to_first_task():
 
 
 # function to register new user and add their username and password to the user.txt file
-def register_new_user():
+def register_new_user(username_password_dict):
     """
     Add a new user to the user.txt file
     Check if username already exists. If so,
@@ -56,13 +56,13 @@ def register_new_user():
     if new_password == confirm_password:
         # - If they are the same, add them to the user.txt file,
         print("New user added")
-        username_password[new_username] = new_password
+        username_password_dict[new_username] = new_password
 
         # write new user and their password into the user.txt file
         with open("user.txt", "w") as out_file:
             user_data = []
-            for k in username_password:
-                user_data.append(f"{k};{username_password[k]}")
+            for k in username_password_dict:
+                user_data.append(f"{k};{username_password_dict[k]}")
             out_file.write("\n".join(user_data))
 
     # - Otherwise you present a relevant message.
@@ -70,7 +70,7 @@ def register_new_user():
         print("Passwords do no match")
 
 
-def add_task():
+def add_task(username_password_dict, date_format, all_tasks_list):
     """Allow a user to add a new task to task.txt file
          Prompt a user for the following:
           - A username of the person whom the task is assigned to,
@@ -81,7 +81,7 @@ def add_task():
     # ask user to input name of person assigned to task. If user doesn't exist, give option to input again.
     while True:
         task_username = input("Name of person assigned to task: ").lower()
-        if task_username not in username_password.keys():
+        if task_username not in username_password_dict.keys():
             print("User does not exist. Please enter a valid username")
         else:
             break
@@ -91,7 +91,7 @@ def add_task():
     while True:
         try:
             task_due_date = input("Due date of task (YYYY-MM-DD): ")
-            due_date_time = datetime.strptime(task_due_date, DATETIME_STRING_FORMAT)
+            due_date_time = datetime.strptime(task_due_date, date_format)
             break
 
         except ValueError:
@@ -102,7 +102,7 @@ def add_task():
     ''' Add the data to the file task.txt and
         Include 'No' to indicate if the task is complete.'''
 
-    task_num = str(len(task_list) + 1)
+    task_num = str(len(all_tasks_list) + 1)
     new_task = {
         "task number": task_num,
         "username": task_username,
@@ -113,12 +113,12 @@ def add_task():
         "completed": False
     }
 
-    task_list.append(new_task)
-    write_tasks_to_file(task_list)
+    all_tasks_list.append(new_task)
+    write_tasks_to_file(all_tasks_list, date_format)
     print("Task successfully added.")
 
 
-def write_tasks_to_file(tasks):
+def write_tasks_to_file(tasks, date_format):
     with open("tasks.txt", "w") as task_file:
         task_list_to_write = []
         for t in tasks:
@@ -128,8 +128,8 @@ def write_tasks_to_file(tasks):
                 t['username'],
                 t['title'],
                 t['description'],
-                t['due_date'].strftime(DATETIME_STRING_FORMAT),
-                t['assigned_date'].strftime(DATETIME_STRING_FORMAT),
+                t['due_date'].strftime(date_format),
+                t['assigned_date'].strftime(date_format),
                 "Yes" if t['completed'] else "No"
             ]
             task_list_to_write.append(";".join(str_attrs))
@@ -157,7 +157,7 @@ def convert_user_assigned_tasks_to_dict(user_assigned_tasks_list):
     return user_assigned_tasks_dict
 
 
-def mark_task_as_complete(all_tasks, task_chosen_by_user):
+def mark_task_as_complete(all_tasks, task_chosen_by_user, date_format):
     # find the chosen task number in all task list and if task not completed, change to Yes (completed)
     for task in all_tasks:
         # check if task is marked as incomplete and if so, change the "completed" status to Yes (True)
@@ -171,12 +171,12 @@ def mark_task_as_complete(all_tasks, task_chosen_by_user):
             print("The task has already been marked as completed.")
 
     # mark the relevant task in the tasks.txt file
-    write_tasks_to_file(all_tasks)
+    write_tasks_to_file(all_tasks, date_format)
 
     print(all_tasks)
 
 
-def display_tasks(tasks):
+def display_tasks(tasks, date_format):
     """Reads the task from task.txt file and prints to the console in the
        format of Output 2 presented in the task pdf (i.e. includes spacing
        and labelling)"""
@@ -186,90 +186,17 @@ def display_tasks(tasks):
         disp_str = f"Task Number: \t {t['task number']}\n"
         disp_str += f"Task: \t\t\t {t['title']}\n"
         disp_str += f"Assigned to: \t {t['username']}\n"
-        disp_str += f"Date Assigned: \t {t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
-        disp_str += f"Due Date: \t\t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
+        disp_str += f"Date Assigned: \t {t['assigned_date'].strftime(date_format)}\n"
+        disp_str += f"Due Date: \t\t {t['due_date'].strftime(date_format)}\n"
         disp_str += f"Task Description: \n\t {t['description']}\n"
         print(disp_str)
 
 
-DATETIME_STRING_FORMAT = "%Y-%m-%d"
-
-
-# Create tasks.txt if it doesn't exist
-if not os.path.exists("tasks.txt"):
-    with open("tasks.txt", "w") as default_file:
-        pass
-
-add_number_1_to_first_task()
-
-with open("tasks.txt", 'r') as task_file:
-    task_data = task_file.read().split("\n")
-    task_data = [t for t in task_data if t != ""]
-
-# create dictionary of tasks with key being task number and value all task data
-task_dict = {}
-
-# create list of tasks, each task to be added as dictionary
-task_list = []
-for t_str in task_data:
-    curr_t = {}
-
-    # Split by semicolon and manually add each component
-    task_components = t_str.split(";")
-
-    # task num
-    curr_t['task number'] = task_components[0]
-    curr_t['username'] = task_components[1]
-    curr_t['title'] = task_components[2]
-    curr_t['description'] = task_components[3]
-    curr_t['due_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
-    curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
-    curr_t['completed'] = True if task_components[6] == "Yes" else False
-
-    task_dict[curr_t['task number']] = curr_t
-    task_list.append(curr_t)
-
-# #====Login Section====
-'''This code reads usernames and password from the user.txt file to 
-    allow a user to login.
-'''
-# If no user.txt file, write one with a default account
-if not os.path.exists("user.txt"):
-    with open("user.txt", "w") as default_file:
-        default_file.write("admin;password")
-
-# Read in user_data
-with open("user.txt", 'r') as user_file:
-    user_data = user_file.read().split("\n")
-
-# Convert to a dictionary
-username_password = {}
-for user in user_data:
-    username, password = user.split(';')
-    username_password[username] = password
-
-logged_in = False
-while not logged_in:
-
-    print("LOGIN")
-    curr_user = input("Username: ")
-    curr_pass = input("Password: ")
-    if curr_user not in username_password.keys():
-        print("User does not exist")
-        continue
-    elif username_password[curr_user] != curr_pass:
-        print("Wrong password")
-        continue
-    else:
-        print("Login Successful!")
-        logged_in = True
-
-
-def edit_task_owner(task):
+def edit_task_owner(task, username_passw_dict):
     # Function to change owner of a task
     while True:
         task_username = input("Who do you want to assign this task to: ").lower()
-        if task_username not in username_password.keys():
+        if task_username not in username_passw_dict.keys():
             print("User does not exist. Please enter a valid username")
         else:
             break
@@ -277,10 +204,10 @@ def edit_task_owner(task):
     return task
 
 
-def edit_due_date(task):
+def edit_due_date(task, date_format):
     # function to change due date of a selected task
     new_due_date = input("What date would you like to change this to? ")
-    task['due_date'] = new_due_date
+    task['due_date'] = datetime.strptime(new_due_date, date_format)
     return task
 
 
@@ -361,9 +288,9 @@ def get_all_users(user_password_dict):
     return usernames
 
 
-def generate_reports(all_tasks):
+def generate_reports(all_tasks, username_password_dictionary):
     generate_task_overview(all_tasks)
-    generate_user_overview(all_tasks, get_all_users(username_password))
+    generate_user_overview(all_tasks, get_all_users(username_password_dictionary))
     # # generate admin reports
     # task_overview.txt
     # user_overview.txt
@@ -387,87 +314,163 @@ def display_stats():
     print("-----------------------------------")
 
 
-while True:
-    # presenting the menu to the user and
-    # making sure that the user input is converted to lower case.
-    print()
+def main():
+    DATETIME_STRING_FORMAT = "%Y-%m-%d"
 
-    menu_top = '''
-r - Registering a user
-a - Adding a task
-va - View all tasks
-vm - View my task
-'''
+    # Create tasks.txt if it doesn't exist
+    if not os.path.exists("tasks.txt"):
+        with open("tasks.txt", "w") as default_file:
+            pass
 
-    menu_bottom = '''
-ds - Display statistics
-e - Exit
-: '''
-    menu_admin = "gr - generate reports"
+    add_number_1_to_first_task()
 
-    if curr_user == "admin":
-        print(menu_top + menu_admin + menu_bottom)
-    else:
-        print(menu_top + menu_bottom)
+    with open("tasks.txt", 'r') as task_file:
+        task_data = task_file.read().split("\n")
+        task_data = [t for t in task_data if t != ""]
 
-    menu_selection = input("Select one of the following Options above: ").lower()
+    # create dictionary of tasks with key being task number and value all task data
+    task_dict = {}
 
-    if menu_selection == 'r':
-        register_new_user()
+    # create list of tasks, each task to be added as dictionary
+    task_list = []
+    for t_str in task_data:
+        curr_t = {}
 
-    elif menu_selection == 'a':
-        add_task()
+        # Split by semicolon and manually add each component
+        task_components = t_str.split(";")
 
-    elif menu_selection == 'va':
-        display_tasks(get_tasks(task_list, None))
+        # task num
+        curr_t['task number'] = task_components[0]
+        curr_t['username'] = task_components[1]
+        curr_t['title'] = task_components[2]
+        curr_t['description'] = task_components[3]
+        curr_t['due_date'] = datetime.strptime(task_components[4], DATETIME_STRING_FORMAT)
+        curr_t['assigned_date'] = datetime.strptime(task_components[5], DATETIME_STRING_FORMAT)
+        curr_t['completed'] = True if task_components[6] == "Yes" else False
 
-    elif menu_selection == 'vm':
-        display_tasks(get_tasks(task_list, user_name=curr_user))
-        user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
+        task_dict[curr_t['task number']] = curr_t
+        task_list.append(curr_t)
 
-        while True:
-            try:
-                choose_task = input("Enter task number assigned to you or -1 to return to main menu. ")
+    # #====Login Section====
+    '''This code reads usernames and password from the user.txt file to 
+        allow a user to login.
+    '''
+    # If no user.txt file, write one with a default account
+    if not os.path.exists("user.txt"):
+        with open("user.txt", "w") as default_file:
+            default_file.write("admin;password")
 
-                if choose_task == "-1":
-                    break
-                    # pass
-                elif choose_task in user_assigned_tasks_dict:
-                    print(f"You have chosen task number {choose_task}")
-                    current_task = user_assigned_tasks_dict[choose_task]
-                    amending_task = input("Enter 'edit' to edit the task or MC as mark as completed.  ").lower()
-                    if amending_task == "edit":
-                        # first check if task marked as True
-                        if current_task["completed"] is True:
-                            print("The task has been marked as completed and cannot be changed.")
-                        else:
-                            choose_edit_option = input("Press 1 to edit task owner or press 2 to edit due date. ")
-                            if choose_edit_option == "1":
-                                current_task = edit_task_owner(current_task)
-                                print(task_list)
-                                write_tasks_to_file(task_list)
-                            else:
-                                current_task = edit_due_date(current_task)
-                                write_tasks_to_file(task_list)
+    # Read in user_data
+    with open("user.txt", 'r') as user_file:
+        user_data = user_file.read().split("\n")
 
-                    elif amending_task == "mc":
-                        mark_task_as_complete(task_list, choose_task)
+    # Convert to a dictionary
+    username_password = {}
+    for user in user_data:
+        username, password = user.split(';')
+        username_password[username] = password
+
+    logged_in = False
+    while not logged_in:
+
+        print("LOGIN")
+        curr_user = input("Username: ")
+        curr_pass = input("Password: ")
+        if curr_user not in username_password.keys():
+            print("User does not exist")
+            continue
+        elif username_password[curr_user] != curr_pass:
+            print("Wrong password")
+            continue
+        else:
+            print("Login Successful!")
+            logged_in = True
+
+    while True:
+        # presenting the menu to the user and
+        # making sure that the user input is converted to lower case.
+        print()
+
+        menu_top = '''
+    r - Registering a user
+    a - Adding a task
+    va - View all tasks
+    vm - View my task
+    '''
+
+        menu_bottom = '''
+    ds - Display statistics
+    e - Exit
+    : '''
+        menu_admin = "gr - generate reports"
+
+        if curr_user == "admin":
+            print(menu_top + menu_admin + menu_bottom)
+        else:
+            print(menu_top + menu_bottom)
+
+        menu_selection = input("Select one of the following Options above: ").lower()
+
+        if menu_selection == 'r':
+            register_new_user(username_password)
+
+        elif menu_selection == 'a':
+            add_task(username_password, DATETIME_STRING_FORMAT, task_list)
+
+        elif menu_selection == 'va':
+            display_tasks(get_tasks(task_list, None), DATETIME_STRING_FORMAT)
+
+        elif menu_selection == 'vm':
+            display_tasks(get_tasks(task_list, user_name=curr_user), DATETIME_STRING_FORMAT)
+            user_assigned_tasks_dict = convert_user_assigned_tasks_to_dict(get_tasks(task_list, curr_user))
+
+            while True:
+                try:
+                    choose_task = input("Enter task number assigned to you or -1 to return to main menu. ")
+
+                    if choose_task == "-1":
                         break
-            except ValueError:
-                print("You have entered incorrect choice. Only enter positive integers. ")
+                        # pass
+                    elif choose_task in user_assigned_tasks_dict:
+                        print(f"You have chosen task number {choose_task}")
+                        current_task = user_assigned_tasks_dict[choose_task]
+                        amending_task = input("Enter 'edit' to edit the task or MC as mark as completed.  ").lower()
+                        if amending_task == "edit":
+                            # first check if task marked as True
+                            if current_task["completed"] is True:
+                                print("The task has been marked as completed and cannot be changed.")
+                            else:
+                                choose_edit_option = input("Press 1 to edit task owner or press 2 to edit due date. ")
+                                if choose_edit_option == "1":
+                                    current_task = edit_task_owner(current_task, username_password)
+                                    write_tasks_to_file(task_list, DATETIME_STRING_FORMAT)
+                                else:
+                                    current_task = edit_due_date(current_task, DATETIME_STRING_FORMAT)
+                                    write_tasks_to_file(task_list, DATETIME_STRING_FORMAT)
+                        # user chooses to mark as complete:
+                        elif amending_task == "mc":
+                            mark_task_as_complete(task_list, choose_task, DATETIME_STRING_FORMAT)
+                            break
+                except ValueError:
+                    print("You have entered incorrect choice. Only enter positive integers. ")
 
-    elif menu_selection == 'ds' and curr_user == 'admin':
-        '''If the user is an admin they can display statistics about number of users
-            and tasks.'''
-        display_stats()
+        elif menu_selection == 'ds' and curr_user == 'admin':
+            '''If the user is an admin they can display statistics about number of users
+                and tasks.'''
+            display_stats()
 
-    elif menu_selection == 'gr':
-        generate_reports(task_list)
         # write function to generate reports
+        elif menu_selection == 'gr':
+            generate_reports(task_list, username_password)
 
-    elif menu_selection == 'e':
-        print('Goodbye!!!')
-        exit()
 
-    else:
-        print("You have made a wrong choice, Please Try again")
+        elif menu_selection == 'e':
+            print('Goodbye!!!')
+            exit()
+
+        else:
+            print("You have made a wrong choice, Please Try again")
+
+
+if __name__ == "__main__":
+    main()
