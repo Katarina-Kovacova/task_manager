@@ -11,17 +11,18 @@ from datetime import datetime, date
 
 
 def add_number_1_to_first_task():
+    # read tasks from file
     with open("tasks.txt", "r") as f:
+        # split the file contents into a list based on the location of the semicolon
         first_task = f.read().split(";")
-        if first_task[0][0] != "1":
-            first_task.insert(0, "1")
-            first_task_string = ";".join(first_task)
-    return first_task_string
 
-
-def add_first_numbered_task_to_task_file(first_task_string):
-    with open("tasks.txt", "w") as f:
-        f.write(first_task_string)
+    # check if the first task number is 1 and if not, add 1 to the first task number
+    if first_task[0][0] != "1":
+        first_task.insert(0, "1")
+        first_task_string = ";".join(first_task)
+        # write updated task back to the tasks file
+        with open("tasks.txt", "w") as f:
+            f.write(first_task_string)
 
 
 # function to register new user and add their username and password to the user.txt file
@@ -199,6 +200,7 @@ if not os.path.exists("tasks.txt"):
     with open("tasks.txt", "w") as default_file:
         pass
 
+add_number_1_to_first_task()
 
 with open("tasks.txt", 'r') as task_file:
     task_data = task_file.read().split("\n")
