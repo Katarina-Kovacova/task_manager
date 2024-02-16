@@ -17,12 +17,13 @@ def add_number_1_to_first_task():
         first_task = f.read().split(";")
 
     # check if the first task number is 1 and if not, add 1 to the first task number
-    if first_task[0][0] != "1":
-        first_task.insert(0, "1")
-        first_task_string = ";".join(first_task)
-        # write updated task back to the tasks file
-        with open("tasks.txt", "w") as f:
-            f.write(first_task_string)
+    if first_task[0] != "":
+        if first_task[0][0] != "1":
+            first_task.insert(0, "1")
+            first_task_string = ";".join(first_task)
+            # write updated task back to the tasks file
+            with open("tasks.txt", "w") as f:
+                f.write(first_task_string)
 
 
 # function to register new user and add their username and password to the user.txt file
@@ -173,7 +174,7 @@ def mark_task_as_complete(all_tasks, task_chosen_by_user, date_format):
     # mark the relevant task in the tasks.txt file
     write_tasks_to_file(all_tasks, date_format)
 
-    print(all_tasks)
+    #print(all_tasks)
 
 
 def display_tasks(tasks, date_format):
@@ -430,7 +431,7 @@ def main():
 
                     if choose_task == "-1":
                         break
-                        # pass
+
                     elif choose_task in user_assigned_tasks_dict:
                         print(f"You have chosen task number {choose_task}")
                         current_task = user_assigned_tasks_dict[choose_task]
